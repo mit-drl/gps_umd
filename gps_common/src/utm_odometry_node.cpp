@@ -23,15 +23,21 @@ void callback(const multi_car_msgs::GPSConstPtr& gps) {
   sensor_msgs::NavSatFix fix;
   int car_id = 0;
   int roomba_id = gps->car_id;
-  if (roomba_id == 0 || roomba_id == 26677 || roomba_id == 26626){
-    car_id = 0;
-  }
-  else if (roomba_id == 1 || roomba_id == 26727 || roomba_id == 26630){
-    car_id = 1;
-  }
-  else if (roomba_id == 2 || roomba_id == 26715 || roomba_id == 26663){
-    car_id = 2;
-  }
+  std::string id_dict = "/id_dict/";
+  std::string roomba_str = boost::lexical_cast<std::string>(roomba_id);
+  std::string dict_key = id_dict + roomba_str;
+
+  ros::param::get(dict_key, car_id);
+
+  // if (roomba_id == 0 || roomba_id == 26677 || roomba_id == 26626){
+  //   car_id = 0;
+  // }
+  // else if (roomba_id == 1 || roomba_id == 26727 || roomba_id == 26630){
+  //   car_id = 1;
+  // }
+  // else if (roomba_id == 2 || roomba_id == 26715 || roomba_id == 26663){
+  //   car_id = 2;
+  // }
   fix = gps->fix;
   std::string car = "car";
   std::string int_id = boost::lexical_cast<std::string>(car_id);
