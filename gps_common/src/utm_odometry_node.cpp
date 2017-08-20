@@ -21,7 +21,7 @@ int Ncars;
 
 void callback(const multi_car_msgs::GPSConstPtr& gps) {
   sensor_msgs::NavSatFix fix;
-  int car_id = 0;
+  int car_id;
   int roomba_id = gps->car_id;
   std::string id_dict = "/id_dict/";
   std::string roomba_str = boost::lexical_cast<std::string>(roomba_id);
