@@ -20,7 +20,7 @@ std::string frame_id, child_frame_id;
 double rot_cov;
 int Ncars;
 
-void callback(const multi_car_msgs::GPSConstPtr& gps) {
+void callback(const multi_car_msgs::GPSPtr& gps) {
   sensor_msgs::NavSatFix fix;
   int car_id;
   int roomba_id = gps->car_id;
