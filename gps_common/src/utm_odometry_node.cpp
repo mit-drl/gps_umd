@@ -17,6 +17,7 @@ using namespace gps_common;
 ros::Publisher * odom_pub;
 ros::Subscriber * fix_sub;
 std::string frame_id, child_frame_id;
+std::string car_name;
 double rot_cov;
 int Ncars;
 
@@ -110,8 +111,9 @@ int main (int argc, char **argv) {
   ros::NodeHandle priv_node("~");
 
   priv_node.param<int>("num_cars", Ncars, 3);
+  priv_node.param<std::string>("car_name", car_name, "");
   priv_node.param<std::string>("frame_id", frame_id, "");
-  priv_node.param<std::string>("child_frame_id", child_frame_id, "");
+  priv_node.param<std::string>("child_frame_id", child_frame_id, "map");
   priv_node.param<double>("rot_covariance", rot_cov, 99999.0);
 
   odom_pub = new ros::Publisher[Ncars];
@@ -121,7 +123,7 @@ int main (int argc, char **argv) {
     std::string int_id = boost::lexical_cast<std::string>(i);
     odom_pub[i] = node.advertise<nav_msgs::Odometry>("odom" + int_id, 10);
     std::string bullshit = "car" + int_id;
-    if (!frame_id.compare(bullshit)){
+    if (car_name.compare(bullshit) != 0){
       fix_sub[i] = node.subscribe("/car" + int_id + "/fix", 10, callback);
     }
     else{
