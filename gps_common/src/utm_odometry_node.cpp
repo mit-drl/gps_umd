@@ -121,7 +121,7 @@ int main (int argc, char **argv) {
     std::string int_id = boost::lexical_cast<std::string>(i);
     odom_pub[i] = node.advertise<nav_msgs::Odometry>("odom" + int_id, 10);
     std::string bullshit = "car" + int_id;
-    if (frame_id.compare(bullshit)){
+    if (!frame_id.compare(bullshit)){
       fix_sub[i] = node.subscribe("/car" + int_id + "/fix", 10, callback);
     }
     else{
