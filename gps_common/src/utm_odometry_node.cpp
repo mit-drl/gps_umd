@@ -43,7 +43,7 @@ void callback(const multi_car_msgs::GPSPtr& gps) {
   fix = gps->fix;
   std::string car = "car";
   std::string int_id = boost::lexical_cast<std::string>(car_id);
-  std::string new_frame_id = car + int_id; 
+  std::string new_frame_id = car + int_id;
   if (fix.status.status == sensor_msgs::NavSatStatus::STATUS_NO_FIX) {
     ROS_INFO("No fix.");
     return;
@@ -74,12 +74,12 @@ void callback(const multi_car_msgs::GPSPtr& gps) {
     odom.pose.pose.position.x = easting;
     odom.pose.pose.position.y = northing;
     odom.pose.pose.position.z = fix.altitude;
-    
+
     odom.pose.pose.orientation.x = 0;
     odom.pose.pose.orientation.y = 0;
     odom.pose.pose.orientation.z = 0;
     odom.pose.pose.orientation.w = 1;
-    
+
     // Use ENU covariance to build XYZRPY covariance
     boost::array<double, 36> covariance = {{
       fix.position_covariance[0],
@@ -123,7 +123,7 @@ int main (int argc, char **argv) {
     std::string int_id = boost::lexical_cast<std::string>(i);
     odom_pub[i] = node.advertise<nav_msgs::Odometry>("odom" + int_id, 10);
     std::string bullshit = "car" + int_id;
-    if (car_name.compare(bullshit) != 0){
+    if (car_name != bullshit){
       fix_sub[i] = node.subscribe("/car" + int_id + "/fix", 10, callback);
     }
     else{
