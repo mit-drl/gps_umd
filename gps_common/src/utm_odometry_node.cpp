@@ -10,6 +10,7 @@
 #include <gps_common/conversions.h>
 #include <nav_msgs/Odometry.h>
 #include <multi_car_msgs/GPS.h>
+#include <multi_car_msgs/SimplePose.h>
 #include <boost/lexical_cast.hpp>
 
 using namespace gps_common;
@@ -62,12 +63,22 @@ void callback(const multi_car_msgs::GPSPtr& gps) {
   if (odom_pub[car_id]) {
 
     nav_msgs::Odometry odom;
+    multi_car_msgs::SimplePose sp;
+    sp.header.stamp = gps->header.stamp;
     odom.header.stamp = gps->header.stamp;
 
-    if (frame_id.empty())
+    if (frame_id.empty()){
+      sp.header.frame_id = gps-> header.frame_id;
       odom.header.frame_id = gps->header.frame_id;
-    else
+    }
+    else{
+      sp.header.frame_id = frame_id;
       odom.header.frame_id = frame_id;
+    }
+
+    sp.car_id = car_id;
+    sp.x = easting;
+    sp.y = northing;
 
     odom.child_frame_id = child_frame_id;
 
@@ -101,7 +112,8 @@ void callback(const multi_car_msgs::GPSPtr& gps) {
 
     odom.pose.covariance = covariance;
 
-    odom_pub[car_id].publish(odom);
+    odom_pub[car_id].publish(sp);
+    // odom_pub[car_id].publish(odom);
   }
 }
 
@@ -110,7 +122,7 @@ int main (int argc, char **argv) {
   ros::NodeHandle node;
   ros::NodeHandle priv_node("~");
 
-  priv_node.param<int>("num_cars", Ncars, 3);
+  priv_node.param<int>("/num_cars", Ncars, 3);
   priv_node.param<std::string>("car_name", car_name, "");
   priv_node.param<std::string>("frame_id", frame_id, "");
   priv_node.param<std::string>("child_frame_id", child_frame_id, "map");
@@ -121,7 +133,7 @@ int main (int argc, char **argv) {
 
   for(int i=0; i<Ncars; i++){
     std::string int_id = boost::lexical_cast<std::string>(i);
-    odom_pub[i] = node.advertise<nav_msgs::Odometry>("odom" + int_id, 10);
+    odom_pub[i] = node.advertise<multi_car_msgs::SimplePose>("odom" + int_id, 10);
     std::string bullshit = "car" + int_id;
     if (car_name != bullshit){
       fix_sub[i] = node.subscribe("/car" + int_id + "/fix", 10, callback);
